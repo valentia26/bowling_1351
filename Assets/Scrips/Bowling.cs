@@ -3,22 +3,29 @@ using UnityEngine.InputSystem;
 
 public class Bowling : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField]
     private Rigidbody rb;
+
+    public static Bowling instance;
 
     [SerializeField]
     private int forcePower;
 
     [SerializeField]
-    private GameObject shootButton; // ลาก Button (UI) มาใส่ใน Inspector
+    private GameObject shootButton;
+
+    private bool hasShot = false; // เช็คว่ายิงไปแล้วหรือยัง
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.dKey.isPressed)
@@ -38,15 +45,31 @@ public class Bowling : MonoBehaviour
 
         rb.AddForce(Vector3.forward * forcePower, ForceMode.Impulse);
 
-       
+        ShowHideShootBallButton(false);
+        hasShot = true;
+    }
+
+    public void ShowHideShootBallButton(bool flag)
+    {
         if (shootButton != null)
-            shootButton.SetActive(false);
+            shootButton.SetActive(flag);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!hasShot) return;
+
+        if (collision.gameObject.CompareTag("Pin"))
+        {
+            if (BowlingScoreManager.instance != null)
+                BowlingScoreManager.instance.CheckStrike();
+        }
     }
 
     private void MoveRight()
     {
-        transform.position += new Vector3(0.5f, 0f, 0f);
-            }
+        transform.position += new Vector3(0.5f, 0f, 0f) * Time.deltaTime;
+    }
 
     private void MoveLeft()
     {
