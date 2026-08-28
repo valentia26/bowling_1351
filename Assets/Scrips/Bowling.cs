@@ -10,6 +10,9 @@ public class Bowling : MonoBehaviour
     [SerializeField]
     private int forcePower;
 
+    [SerializeField]
+    private GameObject shootButton; // ลาก Button (UI) มาใส่ใน Inspector
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -18,33 +21,35 @@ public class Bowling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame) ;
-
-        if (Keyboard.current.rightArrowKey.isPressed|| Keyboard.current.dKey.isPressed) 
+        if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.dKey.isPressed)
         {
             MoveRight();
         }
 
-        if (Keyboard.current.leftArrowKey.isPressed|| Keyboard.current.aKey.isPressed)
+        if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.aKey.isPressed)
         {
             MoveLeft();
         }
-
     }
 
     public void ShootBall()
     {
+        if (rb == null) return;
+
         rb.AddForce(Vector3.forward * forcePower, ForceMode.Impulse);
+
+       
+        if (shootButton != null)
+            shootButton.SetActive(false);
     }
 
     private void MoveRight()
     {
-        transform.position += new Vector3(0.5f , 0f , 0f) * Time.deltaTime;
-    }
+        transform.position += new Vector3(0.5f, 0f, 0f);
+            }
 
     private void MoveLeft()
     {
         transform.position -= new Vector3(0.5f, 0f, 0f) * Time.deltaTime;
     }
 }
-
